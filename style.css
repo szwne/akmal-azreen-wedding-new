@@ -1,0 +1,1649 @@
+* { box-sizing: border-box; }
+:root {
+  --cream: #f8f0e5;
+  --paper: #fffaf2;
+  --blush: #ead5ca;
+  --gold: #b8955b;
+  --gold-dark: #8d6b3e;
+  --ink: #55453d;
+  --muted: #8c7b70;
+}
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); background: var(--cream); font-family: "DM Sans", sans-serif; overflow-x: hidden; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:5; opacity:.17; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E"); }
+.ambient { position:fixed; width:260px; height:260px; border-radius:50%; filter:blur(80px); opacity:.28; pointer-events:none; }
+.ambient-one { background:#e9cdbd; top:-90px; left:-100px; }
+.ambient-two { background:#d8c6a2; bottom:-100px; right:-100px; }
+.envelope-screen { min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; padding:34px 18px 28px; text-align:center; isolation:isolate; overflow:hidden; }
+.envelope-screen::before { content:""; position:absolute; inset:15px; border:1px solid rgba(184,149,91,.42); border-radius:3px; pointer-events:none; }
+.envelope-screen::after { content:"✧"; position:absolute; top:8%; right:10%; color:var(--gold); font-size:30px; animation:twinkle 2.8s ease-in-out infinite; }
+.top-note,.mini-label { font-size:10px; letter-spacing:.25em; color:var(--gold-dark); font-weight:600; }
+.top-note { margin:0 0 24px; }
+.envelope-wrap { width:min(430px,88vw); perspective:1200px; position:relative; margin:0 auto 30px; filter:drop-shadow(0 20px 25px rgba(95,66,45,.12)); }
+.envelope-shadow { position:absolute; width:80%; height:28px; background:rgba(95,66,45,.23); filter:blur(19px); border-radius:50%; bottom:-18px; left:10%; transition:all 1s ease; }
+.envelope { width:100%; aspect-ratio:1.43; position:relative; transform-style:preserve-3d; }
+.envelope-back { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 50% 20%,#fff8e9 0%,#ead5b9 55%,#d7b98c 100%); border:1px solid #c4a16a; border-radius:5px; box-shadow:inset 0 0 0 5px #f9edda,inset 0 0 0 6px #c9a66c,0 24px 55px rgba(100,72,47,.18); }
+.envelope-back::before { content:""; position:absolute; inset:13px; border:1px solid rgba(160,119,61,.48); border-radius:2px; background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(183,146,88,.055) 12px 13px); }
+.envelope-back::after { content:"❦  ✧  ❦"; position:absolute; top:12px; left:0; width:100%; text-align:center; color:#b8955b; letter-spacing:.38em; font-size:12px; opacity:.9; }
+.letter { position:absolute; z-index:1; left:8%; top:5%; width:84%; height:91%; background:linear-gradient(145deg,#fffef9,#f7ead7); border:1px solid #d4b780; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; transition:transform 1.05s cubic-bezier(.2,.8,.2,1), top 1.05s ease; box-shadow:inset 0 0 0 5px #fffaf0,inset 0 0 0 6px #dfc79d,0 7px 18px #80634722; }
+.letter::before,.letter::after { content:"✧"; position:absolute; color:#b8955b; font-size:18px; }
+.letter::before { top:13px; left:15px; }
+.letter::after { bottom:13px; right:15px; }
+.letter-kicker { font-size:9px; letter-spacing:.28em; color:var(--gold-dark); text-transform:uppercase; }
+.letter-names { font-family:"Great Vibes",cursive; color:#79552f; font-size:clamp(37px,9vw,57px); line-height:.87; text-shadow:0 1px 0 #fff3d7; }
+.letter-names i { font-family:"Cormorant Garamond",serif; font-size:.7em; }
+.letter-date { font-size:9px; letter-spacing:.22em; margin-top:9px; color:#8d6b3e; }
+.letter-flower { color:var(--gold); font-size:25px; }
+.envelope-front-left,.envelope-front-right,.envelope-front-bottom { position:absolute; inset:0; z-index:3; }
+.envelope-front-left { background:linear-gradient(135deg,#f9ead5,#e5c8a1); clip-path:polygon(0 0,50% 53%,0 100%); border-radius:4px; }
+.envelope-front-right { background:linear-gradient(225deg,#f7e5cd,#dfbf95); clip-path:polygon(100% 0,50% 53%,100% 100%); border-radius:4px; }
+.envelope-front-bottom { background:linear-gradient(0deg,#d8b583,#f0ddc1); clip-path:polygon(0 100%,50% 48%,100% 100%); border-radius:4px; }
+.envelope-front-bottom::after { content:""; position:absolute; inset:0; background:linear-gradient(0deg,rgba(255,248,230,.2),transparent 75%); }
+.envelope-flap { position:absolute; inset:0; z-index:4; background:linear-gradient(155deg,#fff0d8 0%,#e5c49a 100%); clip-path:polygon(0 0,100% 0,50% 59%); transform-origin:top center; backface-visibility:visible; transition:transform 1s cubic-bezier(.3,.7,.2,1); filter:drop-shadow(0 4px 3px #8a6c4a22); }
+.envelope-flap::after { content:""; position:absolute; left:8%; right:8%; top:8%; height:38%; border-top:1px solid rgba(165,124,65,.5); }
+
+.wax-seal { position:absolute; z-index:6; top:42%; left:50%; transform:translate(-50%,-50%); width:61px; height:61px; border-radius:50%; border:1px solid #b68b4c; background:radial-gradient(circle at 33% 26%,#e7c987 0%,#bc9253 52%,#8b6232 100%); color:#fff6df; box-shadow:0 5px 12px #76512b55,inset 0 0 0 2px #e9d09a,inset 0 0 0 5px #ad8045,inset 0 0 0 6px #e9d09a; cursor:pointer; font-size:24px; transition:opacity .3s, transform .3s; }
+.wax-seal:hover { transform:translate(-50%,-50%) scale(1.08) rotate(-8deg); }
+.envelope-title { font-family:"Great Vibes",cursive; font-size:clamp(43px,10vw,61px); font-weight:400; color:#8d6b3e; margin:2px 0 0; }
+.envelope-title span { font-family:"Cormorant Garamond",serif; font-size:.65em; }
+.envelope-subtitle { font-family:"Cormorant Garamond",serif; font-style:italic; font-size:17px; margin:4px 0 20px; color:#87756a; }
+.open-hint { border:1px solid #b8955b; background:transparent; color:#8d6b3e; padding:12px 21px; font-size:10px; letter-spacing:.19em; cursor:pointer; transition: background .3s, color .3s; }
+.open-hint span { margin-left:10px; font-size:14px; }
+.open-hint:hover { background:#b8955b; color:white; }
+.envelope-footnote { font-family:"Cormorant Garamond",serif; font-style:italic; color:#9a8777; font-size:15px; margin:18px 0 0; }
+.tiny-sparkle { position:absolute; color:#b8955b; animation:float 4s ease-in-out infinite; }
+.sparkle-a { top:21%; left:12%; font-size:20px; }
+.sparkle-b { top:35%; right:10%; font-size:25px; animation-delay:-1.4s; }
+.sparkle-c { bottom:16%; left:15%; font-size:16px; animation-delay:-2.4s; }
+.envelope-screen.opening .envelope-flap { transform:rotateX(180deg); z-index:0; }
+.envelope-screen.opening .letter { transform:translateY(-60%) scale(1.03); z-index:5; }
+.envelope-screen.opening .wax-seal { opacity:0; pointer-events:none; }
+.envelope-screen.opening .envelope-shadow { transform:scale(1.2); opacity:.3; }
+.reveal-section { min-height:100svh; padding:56px 18px 38px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+.hidden { display:none !important; }
+.reveal-section.show,.invitation-content.show { animation:fadeUp 1.1s ease both; }
+.section-ornament { color:var(--gold-dark); font-size:9px; letter-spacing:.25em; text-align:center; margin:0 0 24px; }
+.film-frame { position:relative; width:min(860px,100%); padding:9px; background:linear-gradient(145deg,#d6b77e,#fff5df 35%,#b8955b 70%,#f7e8ca); box-shadow:0 20px 55px #6b4c2c20; }
+.film-frame::before { content:""; position:absolute; inset:15px; border:1px solid #c6a66e; pointer-events:none; z-index:2; }
+.wedding-film { display:block; width:100%; height:auto; max-height:72vh; object-fit:contain; background:#f7efe3; }
+.film-caption { display:flex; align-items:center; justify-content:center; gap:12px; padding:13px 6px 5px; color:#8d6b3e; font-size:9px; letter-spacing:.18em; flex-wrap:wrap; }
+.caption-heart { font-size:17px; }
+.scroll-cue { border:0; background:none; color:#8d6b3e; margin-top:30px; font-size:10px; letter-spacing:.18em; cursor:pointer; animation:bob 1.8s infinite; }
+.scroll-cue span { display:block; font-size:19px; margin-top:6px; }
+.invitation-content { max-width:760px; margin:0 auto; padding:48px 22px 30px; text-align:center; position:relative; }
+.floral-rule { display:flex; justify-content:center; align-items:center; gap:15px; color:var(--gold); font-size:25px; margin:0 auto 28px; }
+.floral-rule i { width:90px; height:1px; background:#c9ab78; }
+.bismillah {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  text-align: center;
+  direction: rtl;
+  line-height: 1.8;
+  margin: 10px auto 28px;
+  width: 100%;
+  color: #9b7d5d;
+}
+.invitation-copy { max-width:570px; margin:0 auto 13px; font-family:"Cormorant Garamond",serif; font-size:21px; line-height:1.55; color:#68574c; }
+.final-copy { margin-bottom:35px; }
+.couple-card { position:relative; padding:36px 20px 29px; margin: 10px auto 65px; max-width:570px; border:1px solid #c8aa76; background:linear-gradient(135deg,#fffaf2,#f6e9d8); box-shadow:0 12px 35px #8a654014; }
+.couple-card::before,.couple-card::after { content:"✧"; position:absolute; color:#bd9b62; font-size:20px; }
+.couple-card::before { top:10px; left:13px; }
+.couple-card::after { bottom:10px; right:13px; }
+.couple-card .mini-label { display:block; margin-bottom:22px; }
+.couple-name { font-family:"Cormorant Garamond",serif; font-weight:600; font-size:clamp(25px,5.7vw,38px); line-height:1.15; color:#76563a; }
+.couple-name span { font-weight:400; font-size:.78em; }
+.ampersand { font-family:"Great Vibes",cursive; font-size:42px; color:#b8955b; margin:8px 0; }
+.couple-flower { color:#b8955b; margin-top:20px; font-size:21px; animation:slowSpin 15s linear infinite; display:inline-block; }
+.countdown-heading { margin: 0 auto 22px;padding-top: 0; }
+.countdown-heading .mini-label { display:block; }
+.countdown-heading h2,.details-card h2,.rsvp-card h2 { font-family:"Cormorant Garamond",serif; font-size:clamp(32px,7vw,43px); font-weight:500; color:#76563a; margin:8px 0; }
+.countdown-heading h2 span { color:#bd9b62; font-family:"DM Sans",sans-serif; font-size:22px; }
+.countdown-heading p { font-family:"Cormorant Garamond",serif; font-size:18px; color:#8c7b70; margin:0 auto; max-width:420px; }
+.countdown { display:flex; justify-content:center; align-items:center; gap:clamp(5px,2vw,15px); margin:28px auto 12px; }
+.count-unit { width:clamp(58px,15vw,91px); aspect-ratio:.84; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; border:1px solid #d2b783; background:linear-gradient(145deg,#fffaf3,#f0e0cb); border-radius:45% 45% 8px 8px; box-shadow:0 7px 18px #8d6b3e10; }
+.count-unit strong { font-family:"Cormorant Garamond",serif; font-weight:600; font-size:clamp(26px,6vw,39px); color:#8d6b3e; font-variant-numeric:tabular-nums; }
+.count-unit span { font-size:8px; letter-spacing:.15em; color:#9a8267; }
+.count-separator { color:#bd9b62; font-size:18px; margin-top:-10px; }
+.countdown-note { font-size:11px; letter-spacing:.04em; color:#8c7b70; margin:15px 0 54px; }
+.details-card { position:relative; max-width:570px; margin:0 auto 44px; padding:35px clamp(20px,5vw,42px) 32px; background:#fffaf3; border:1px solid #e1cda9; box-shadow:0 15px 38px #8a654014; }
+.details-icon { width:43px; height:43px; display:grid; place-items:center; border:1px solid #c8aa76; color:#a9844e; border-radius:50%; margin:0 auto 17px; font-size:22px; background:#f8eddd; }
+.details-card h2 { margin:7px 0 28px; }
+.detail-row { display:flex; gap:17px; align-items:flex-start; text-align:left; padding:16px 0; border-top:1px solid #eadbc4; }
+.detail-symbol { flex:0 0 35px; width:35px; height:35px; display:grid; place-items:center; border-radius:50%; background:#f3e5d2; color:#9c7849; font-size:19px; }
+.detail-row small { display:block; font-size:9px; letter-spacing:.18em; color:#a1845e; margin:2px 0 5px; }
+.detail-row p { margin:0; font-family:"Cormorant Garamond",serif; font-size:21px; line-height:1.35; color:#69564a; }
+.detail-row .muted { font-family:"DM Sans",sans-serif; font-size:12px; color:#9b8a7d; }
+.gold-button,.rsvp-button { display:inline-flex; justify-content:center; align-items:center; gap:18px; padding:14px 24px; margin-top:20px; background:#a9844e; color:#fffaf1; text-decoration:none; font-size:11px; letter-spacing:.08em; border:1px solid #a9844e; transition:all .25s; box-shadow:0 7px 16px #8d6b3e20; }
+.gold-button:hover,.rsvp-button:hover { background:#8d6b3e; transform:translateY(-2px); }
+.little-note { padding:28px 12px 45px; }
+.note-sparkle { font-size:22px; color:#b8955b; animation:twinkle 2s infinite; }
+.script-note { font-family:"Great Vibes",cursive; font-size:clamp(28px,7vw,38px); color:#8d6b3e; margin:4px 0; }
+.note-small { max-width:370px; margin:17px auto 0; font-family:"Cormorant Garamond",serif; font-size:18px; line-height:1.5; color:#887669; }
+.rsvp-card { position:relative; max-width:570px; margin:0 auto 35px; padding:38px 24px 32px; background:#f0e1cf; border:1px solid #d0b17c; overflow:hidden; }
+.rsvp-card::before,.rsvp-card::after { content:"✧"; position:absolute; color:#c5a36c; font-size:42px; opacity:.6; }
+.rsvp-card::before { top:8px; left:13px; }
+.rsvp-card::after { bottom:4px; right:13px; }
+.rsvp-flower { color:#a9844e; font-size:25px; margin-bottom:10px; }
+.rsvp-card h2 { font-size:clamp(30px,7vw,40px); }
+.rsvp-card p { max-width:410px; margin:12px auto; font-family:"Cormorant Garamond",serif; font-size:19px; line-height:1.45; color:#786456; }
+.rsvp-button { background:#fff9ef; color:#8d6b3e; border-color:#b8955b; margin-top:18px; }
+.rsvp-button:hover { color:#fffaf1; }
+.rsvp-card .rsvp-thanks { font-size:16px; margin-top:21px; }
+footer { padding:18px 0 30px; color:#8c7b70; }
+.footer-flower { color:#b8955b; font-size:26px; }
+footer p { font-family:"Cormorant Garamond",serif; font-style:italic; margin:5px 0 0; }
+.footer-names { font-family:"Great Vibes",cursive; font-size:37px; color:#8d6b3e; }
+footer small { font-size:9px; letter-spacing:.2em; }
+.back-to-top { position:fixed; bottom:17px; right:17px; z-index:10; width:40px; height:40px; border:1px solid #b8955b; border-radius:50%; color:#8d6b3e; background:#fffaf1e8; font-size:20px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .3s; }
+.back-to-top.visible { opacity:1; pointer-events:auto; }
+@keyframes float { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-15px) rotate(12deg)} }
+@keyframes twinkle { 0%,100%{opacity:.4;transform:scale(.9)} 50%{opacity:1;transform:scale(1.12)} }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+@keyframes slowSpin { to{transform:rotate(360deg)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@media (max-width:480px) {
+  .envelope-screen::before { inset:10px; }
+  .envelope-wrap { width:min(350px,86vw); }
+  .wax-seal { width:46px; height:46px; }
+  .envelope-subtitle { max-width:260px; line-height:1.4; }
+  .invitation-content { padding-left:17px; padding-right:17px; }
+  .invitation-copy { font-size:19px; }
+  .film-frame { padding:5px; }
+  .film-frame::before { inset:10px; }
+  .film-caption { font-size:8px; gap:8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; }
+}
+
+/* Extra luxury detailing for the envelope cover */
+.envelope-screen .top-note { padding:9px 18px; border-top:1px solid #c9a66c; border-bottom:1px solid #c9a66c; position:relative; }
+.envelope-screen .top-note::before,.envelope-screen .top-note::after { content:"✧"; position:absolute; top:50%; transform:translateY(-50%); color:#b8955b; font-size:12px; }
+.envelope-screen .top-note::before { left:-9px; }
+.envelope-screen .top-note::after { right:-9px; }
+.envelope-title { text-shadow:0 1px 0 #fff8e8,0 5px 20px #b8955b24; }
+@media (max-width:480px) {
+  .envelope-wrap { width:min(390px,89vw); }
+  .wax-seal { width:52px; height:52px; }
+}
+
+/* ==========================================
+   AKMAL & AZREEN — ROYAL LUXURY UPGRADE
+   Champagne gold • embossed paper • heirloom
+========================================== */
+
+:root {
+  --gold: #b8955b;
+  --gold-dark: #846033;
+  --cream: #f8f0e5;
+  --paper: #fffaf2;
+}
+
+.envelope-screen {
+  background:
+    radial-gradient(ellipse at 50% 42%, #fffdf7 0%, #f8f0e5 60%, #efe0cb 100%);
+  padding-top: 44px;
+  padding-bottom: 36px;
+}
+
+.envelope-screen::before {
+  inset: 13px;
+  border: 1px solid #c5a36b;
+  outline: 1px solid #c5a36b55;
+  outline-offset: 5px;
+  box-shadow: inset 0 0 60px #c9aa7510;
+}
+
+.envelope-screen::after {
+  content: "✧";
+  top: 10%;
+  right: 13%;
+  font-size: 36px;
+  text-shadow: 0 0 18px #c9a66c88;
+}
+
+.top-note {
+  font-size: 9px;
+  letter-spacing: .32em;
+}
+
+.envelope-wrap {
+  width: min(470px, 89vw);
+  margin-top: 8px;
+  filter: drop-shadow(0 28px 28px #70502c24);
+}
+
+.envelope {
+  isolation: isolate;
+  transform-style: preserve-3d;
+}
+
+.envelope-back {
+  background:
+    radial-gradient(ellipse at 50% 30%, #fff9ec 0%, #ead6b4 65%, #c8a46c 100%);
+  border: 1px solid #ad8447;
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 0 4px #f9edda,
+    inset 0 0 0 5px #c9a66c,
+    inset 0 0 0 10px #fff5e4,
+    inset 0 0 0 11px #d6b980,
+    0 22px 45px #76532a20;
+}
+
+.envelope-back::before {
+  inset: 17px;
+  border: 1px solid #b8955b99;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 15px,
+      #b8955b0b 15px 16px
+    );
+}
+
+.envelope-back::after {
+  content: "✧  ❦  ✧  ❦  ✧";
+  top: 15px;
+  font-size: 13px;
+  letter-spacing: .3em;
+  color: #9e7943;
+}
+
+/* Raised paper texture on the invitation card */
+.letter {
+  border: 1px solid #bd9b62;
+  background:
+    radial-gradient(ellipse at top, #fffefb 0%, transparent 75%),
+    linear-gradient(135deg, #fffdf7, #f5e5ce);
+  box-shadow:
+    inset 0 0 0 4px #fffaf0,
+    inset 0 0 0 5px #dfc79d,
+    inset 0 0 0 10px #fff9ed,
+    inset 0 0 0 11px #ead6b2,
+    0 12px 30px #76532a25;
+}
+
+.letter::before {
+  content: "✦";
+  top: 17px;
+  left: 19px;
+  font-size: 15px;
+}
+
+.letter::after {
+  content: "✦";
+  bottom: 17px;
+  right: 19px;
+  font-size: 15px;
+}
+
+.letter-kicker {
+  font-size: 9px;
+  letter-spacing: .32em;
+}
+
+.letter-names {
+  font-size: clamp(43px, 10vw, 64px);
+  line-height: .91;
+  color: #76512b;
+  text-shadow: 0 1px #fff, 0 3px 8px #b8955b30;
+}
+
+.letter-date {
+  font-size: 9px;
+  letter-spacing: .25em;
+}
+
+.letter-flower {
+  font-size: 28px;
+  text-shadow: 0 2px 8px #b8955b33;
+}
+
+/* Layered envelope folds */
+.envelope-front-left {
+  background:
+    linear-gradient(120deg, #fff0d9 0%, #e8cca4 72%, #d9b784 100%);
+  filter: drop-shadow(1px 0 1px #a9844e66);
+}
+
+.envelope-front-right {
+  background:
+    linear-gradient(240deg, #fff0d9 0%, #e6c79a 72%, #d2ad78 100%);
+  filter: drop-shadow(-1px 0 1px #a9844e66);
+}
+
+.envelope-front-bottom {
+  background:
+    linear-gradient(0deg, #d1ad78 0%, #f5e2c4 75%, #fff4df 100%);
+  filter: drop-shadow(0 -2px 2px #8d6b3e1c);
+}
+
+.envelope-flap {
+  background:
+    linear-gradient(145deg, #fff7e7 0%, #eed6ae 50%, #d8b47d 100%);
+  filter: drop-shadow(0 5px 5px #76532a22);
+}
+
+.envelope-flap::after {
+  left: 10%;
+  right: 10%;
+  top: 9%;
+  height: 34%;
+  border-top: 1px solid #a9844e99;
+  border-bottom: 1px solid #fff6e0aa;
+}
+
+/* A more substantial wax seal */
+.wax-seal {
+  width: 72px;
+  height: 72px;
+  border: 1px solid #91652f;
+  background:
+    radial-gradient(circle at 30% 23%, #f3dca2 0%, #c39a57 35%, #9c6e35 73%, #7d5429 100%);
+  box-shadow:
+    0 7px 15px #76512b66,
+    0 0 0 3px #ead3a3,
+    0 0 0 4px #ad8147,
+    inset 0 0 0 2px #f1dca7,
+    inset 0 0 0 5px #ad8045,
+    inset 0 0 0 6px #f0d69d;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 21px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px #805a2c;
+}
+
+.wax-seal span {
+  display: block;
+  transform: translateY(-1px);
+}
+
+.wax-seal:hover {
+  box-shadow:
+    0 9px 19px #76512b66,
+    0 0 0 4px #ead3a3,
+    0 0 0 5px #ad8147,
+    inset 0 0 0 2px #f1dca7,
+    inset 0 0 0 6px #ad8045;
+}
+
+.envelope-title {
+  font-family: "Allura", cursive;
+  font-size: clamp(58px, 12vw, 78px);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: none;
+  line-height: 1.1;
+  color: #79552f;
+  text-shadow: 0 2px #fff9ed, 0 8px 22px #b8955b30;
+  margin-top: 2px;
+}
+
+
+.envelope-subtitle {
+  font-size: 19px;
+  color: #796658;
+}
+
+.open-hint {
+  padding: 14px 25px;
+  background: linear-gradient(135deg, #fffaf0, #ead6b6);
+  border: 1px solid #b8955b;
+  box-shadow: 0 5px 18px #8d6b3e15;
+  transition: transform .3s, box-shadow .3s;
+}
+
+.open-hint:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 23px #8d6b3e25;
+}
+
+/* Envelope opening choreography */
+.envelope-screen.opening .envelope-flap {
+  transform: rotateX(180deg);
+  z-index: 0;
+}
+
+.envelope-screen.opening .letter {
+  animation: luxuryLetterRise 1.25s cubic-bezier(.2,.75,.2,1) forwards;
+  z-index: 5;
+}
+
+.envelope-screen.opening .wax-seal {
+  animation: sealFade .32s ease forwards;
+  pointer-events: none;
+}
+
+.envelope-screen.opening .envelope-shadow {
+  transform: scale(1.2);
+  opacity: .25;
+}
+
+@keyframes luxuryLetterRise {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  35% {
+    transform: translateY(-12%) scale(1.015);
+  }
+  100% {
+    transform: translateY(-65%) scale(1.045);
+  }
+}
+
+@keyframes sealFade {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.55) rotate(-20deg);
+  }
+}
+
+/* Elegant reveal and invitation details */
+.film-frame {
+  padding: 11px;
+  background:
+    linear-gradient(135deg, #b18a4f, #fff5dc 24%, #d6b77e 48%, #fff8e8 72%, #a9844e);
+  box-shadow:
+    0 25px 65px #6b4c2c24,
+    0 0 0 1px #fff9ec;
+}
+
+.film-frame::before {
+  inset: 17px;
+  border: 1px solid #d0b17c;
+  box-shadow: inset 0 0 0 4px #fff5df33;
+}
+
+.couple-card,
+.details-card,
+.rsvp-card {
+  box-shadow:
+    0 18px 45px #8a654018,
+    0 2px 0 #fffdf8 inset;
+}
+
+.couple-card {
+  outline: 1px solid #c8aa7633;
+  outline-offset: 5px;
+}
+
+.gold-button,
+.rsvp-button {
+  min-height: 48px;
+  letter-spacing: .12em;
+}
+
+footer {
+  border-top: 1px solid #c9ab783f;
+  margin-top: 8px;
+  padding-top: 26px;
+}
+
+@media (max-width: 480px) {
+  .envelope-wrap {
+    width: min(390px, 87vw);
+  }
+
+  .wax-seal {
+    width: 54px;
+    height: 54px;
+    font-size: 18px;
+  }
+
+  .letter-names {
+    font-size: clamp(37px, 10vw, 49px);
+  }
+
+  .envelope-title {
+    font-size: clamp(46px, 12vw, 59px);
+  }
+
+  .envelope-subtitle {
+    font-size: 17px;
+  }
+
+  .film-frame {
+    padding: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-screen.opening .letter {
+    animation: none;
+    transform: translateY(-45%);
+  }
+}
+.envelope-names {
+    font-family: 'Great Vibes', cursive;
+    text-transform: none;
+}
+
+.couple-full-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.02em;
+}
+.letter-names {
+  font-family: "Allura", cursive;
+  font-size: clamp(48px, 11vw, 65px);
+  font-weight: 400;
+  text-transform: none;
+  line-height: 0.95;
+  color: #76512b;
+}
+
+.letter-names i {
+  font-family: "Allura", cursive;
+  font-style: normal;
+  font-size: 0.8em;
+}
+
+/* ===== OLD MONEY LUXURY INVITATION CARD ===== */
+
+.couple-card {
+  position: relative;
+  max-width: 590px;
+  margin: 10px auto 65px;
+  padding: 48px 28px 38px;
+
+  background:
+    radial-gradient(ellipse at top, #fffefb 0%, transparent 75%),
+    linear-gradient(145deg, #fffdf8 0%, #f8efe1 100%);
+
+  border: 1px solid #c8aa76;
+  outline: 1px solid rgba(184, 149, 91, 0.4);
+  outline-offset: 5px;
+
+  box-shadow:
+    0 18px 45px rgba(91, 66, 42, 0.09),
+    inset 0 0 0 5px #fffaf2,
+    inset 0 0 0 6px rgba(200, 170, 118, 0.55);
+
+  text-align: center;
+}
+
+/* Refined corner ornaments */
+.couple-card::before,
+.couple-card::after {
+  color: #b8955b;
+  font-size: 19px;
+  opacity: 0.85;
+}
+
+.couple-card::before {
+  top: 13px;
+  left: 17px;
+}
+
+.couple-card::after {
+  bottom: 13px;
+  right: 17px;
+}
+
+/* Small heading above the names */
+.couple-card .mini-label {
+  display: block;
+  margin-bottom: 27px;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: #8d6b3e;
+}
+
+/* Couple's full names */
+.couple-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(27px, 5.8vw, 39px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: #76563a;
+  text-transform: none;
+}
+
+/* Elegant ampersand */
+.ampersand {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 34px;
+  font-weight: 400;
+  font-style: italic;
+  color: #b8955b;
+  margin: 9px 0;
+}
+
+/* Floral detail below the names */
+.couple-flower {
+  display: inline-block;
+  margin-top: 25px;
+  color: #b8955b;
+  font-size: 23px;
+}
+
+/* Mobile spacing */
+@media (max-width: 480px) {
+  .couple-card {
+    padding: 43px 20px 34px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .couple-name {
+    font-size: clamp(25px, 7vw, 33px);
+    line-height: 1.35;
+  }
+
+  .couple-card .mini-label {
+    letter-spacing: 0.22em;
+  }
+}
+.countdown-title {
+  font-family: inherit;
+  font-size: 25px !important;
+  letter-spacing: 2px;
+  font-weight: normal;
+}
+
+
+/* ===== ELEGANT WALIMATULURUS SECTION ===== */
+
+.couple-card .wedding-heading {
+  display: block;
+  margin: 0 auto 8px;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(42px, 7vw, 58px);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: #a88756;
+  text-transform: none;
+  text-shadow: 0 2px 10px rgba(168, 135, 86, 0.12);
+}
+
+
+
+/* REALISTIC LUXURY WEDDING RINGS */
+.real-rings {
+  position: relative;
+  width: 290px;
+  height: 205px;
+  margin: 10px auto 25px;
+  perspective: 800px;
+}
+
+/* Gold band */
+.gold-ring {
+  position: absolute;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background:
+    linear-gradient(
+      105deg,
+      #6e471b 0%,
+      #c49a4a 12%,
+      #fff0b2 25%,
+      #b88935 38%,
+      #f9e4a0 50%,
+      #a87327 66%,
+      #f6d77e 82%,
+      #70491e 100%
+    );
+  box-shadow:
+    inset 0 3px 3px rgba(255,255,255,.8),
+    inset 0 -5px 6px rgba(70,38,8,.45),
+    0 8px 12px rgba(76,48,15,.2);
+  transform-style: preserve-3d;
+}
+
+/* Large wedding band */
+.big-ring {
+  width: 132px;
+  height: 132px;
+  left: 48px;
+  top: 34px;
+  border: 2px solid #d8b66c;
+  transform: rotate(-25deg) rotateX(12deg);
+  animation: bigRingFloat 5s ease-in-out infinite;
+}
+
+/* Inner opening */
+.ring-inner {
+  position: absolute;
+  inset: 17px;
+  border-radius: 50%;
+  background: #f8f1e5;
+  box-shadow:
+    inset 0 4px 9px rgba(67,44,20,.25),
+    0 0 0 2px rgba(255,226,151,.8);
+}
+
+/* Metallic reflection */
+.ring-shine {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: linear-gradient(
+    125deg,
+    transparent 30%,
+    rgba(255,255,255,.85) 43%,
+    rgba(255,255,255,.15) 49%,
+    transparent 58%
+  );
+  pointer-events: none;
+}
+
+/* Smaller overlapping ring */
+.small-ring {
+  width: 98px;
+  height: 98px;
+  left: 130px;
+  top: 66px;
+  border: 2px solid #f2d58b;
+  transform: rotate(18deg) rotateX(10deg);
+  animation: smallRingFloat 5s ease-in-out infinite;
+  animation-delay: -2.5s;
+  z-index: 2;
+}
+
+.small-ring .ring-inner {
+  inset: 13px;
+  background: #f8f1e5;
+}
+
+/* Small diamond setting */
+.diamond {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  left: 34px;
+  top: -10px;
+  transform: rotate(45deg);
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #e6f4ff 28%,
+    #b7d9e8 45%,
+    #ffffff 60%,
+    #c6e1ed 78%,
+    #ffffff 100%
+  );
+  border: 1px solid #d7e5e9;
+  box-shadow:
+    0 0 8px rgba(255,255,255,.9),
+    0 2px 5px rgba(78,91,99,.25);
+  z-index: 3;
+}
+
+.diamond span {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+  background: rgba(132,163,176,.6);
+}
+
+@keyframes bigRingFloat {
+  0%, 100% {
+    transform: rotate(-25deg) rotateX(12deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-20deg) rotateX(12deg) translateY(-5px);
+  }
+}
+
+@keyframes smallRingFloat {
+  0%, 100% {
+    transform: rotate(18deg) rotateX(10deg) translateY(0);
+  }
+  50% {
+    transform: rotate(23deg) rotateX(10deg) translateY(-7px);
+  }
+}
+
+@media (max-width: 480px) {
+  .real-rings {
+    transform: scale(.85);
+    transform-origin: top center;
+    margin-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-ring {
+    animation: none;
+  }
+}
+
+/* ===== POLISHED LUXURY ANIMATIONS ===== */
+
+/* Soft golden light moving in the background */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  background:
+    radial-gradient(circle at 12% 24%, #d6b77e44 0 1px, transparent 3px),
+    radial-gradient(circle at 82% 18%, #b8955b55 0 1.5px, transparent 3px),
+    radial-gradient(circle at 72% 65%, #d6b77e44 0 1px, transparent 3px),
+    radial-gradient(circle at 24% 78%, #b8955b44 0 1px, transparent 3px),
+    radial-gradient(circle at 90% 88%, #d6b77e55 0 1px, transparent 3px);
+  background-size: 230px 260px, 300px 330px, 270px 290px,
+                   320px 350px, 250px 280px;
+  animation: goldenDust 18s linear infinite alternate;
+}
+
+/* Keep the website content above the background */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.back-to-top {
+  position: fixed;
+  z-index: 10;
+}
+@keyframes goldenDust {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 30px -45px, -35px 40px,
+                         45px 25px, -25px -35px, 20px 45px;
+  }
+}
+
+/* Gentle entrance for invitation cards */
+.couple-card,
+.details-card,
+.rsvp-card,
+.countdown-heading,
+.countdown,
+.little-note {
+  transition:
+    transform 0.65s ease,
+    box-shadow 0.65s ease;
+}
+
+.couple-card:hover,
+.details-card:hover,
+.rsvp-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 22px 48px #8a654022,
+    0 2px 0 #fffdf8 inset;
+}
+
+/* Metallic shine across the rings */
+.ring-shine {
+  background-size: 220% 220%;
+  animation: metallicShine 4s ease-in-out infinite;
+}
+
+@keyframes metallicShine {
+  0%, 100% {
+    background-position: 100% 50%;
+    opacity: 0.55;
+  }
+  50% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+}
+
+/* Subtle invitation prompt animation */
+.open-hint {
+  animation: hintGlow 3s ease-in-out infinite;
+}
+
+@keyframes hintGlow {
+  0%, 100% {
+    box-shadow: 0 5px 18px #8d6b3e15;
+  }
+  50% {
+    box-shadow: 0 5px 24px #b8955b45;
+  }
+}
+
+/* Softer button interactions */
+.gold-button,
+.rsvp-button {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.gold-button:hover,
+.rsvp-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px #8d6b3e30;
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  body::after,
+  .open-hint,
+  .ring-shine {
+    animation: none !important;
+  }
+
+  .couple-card,
+  .details-card,
+  .rsvp-card {
+    transition: none;
+  }
+}
+
+/* ===== LUXURY WEDDING DETAILS ===== */
+
+/* Elegant double gold border */
+.couple-card {
+  position: relative;
+  border: 1px solid #c4a467;
+  outline: 1px solid #c4a467;
+  outline-offset: -8px;
+}
+
+/* Delicate floral corner ornaments */
+.couple-card::before,
+.couple-card::after {
+  position: absolute;
+  color: #b8955b;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 32px;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.couple-card::before {
+  content: "❧";
+  top: 12px;
+  left: 13px;
+  transform: rotate(-35deg);
+}
+
+.couple-card::after {
+  content: "❧";
+  bottom: 12px;
+  right: 13px;
+  transform: rotate(145deg);
+}
+
+/* Gentle gold shimmer on the couple's names */
+.couple-card h1,
+.couple-card h2 {
+  animation: nameGlow 4s ease-in-out infinite;
+}
+
+@keyframes nameGlow {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 12px #c4a46755;
+  }
+}
+
+/* Floating gold particles */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0.4;
+  background-image:
+    radial-gradient(circle, #c4a467 1px, transparent 1.8px),
+    radial-gradient(circle, #dfc995 1px, transparent 2px),
+    radial-gradient(circle, #b8955b 1px, transparent 2px);
+  background-size: 130px 170px, 190px 230px, 240px 200px;
+  background-position: 0 0, 50px 80px, 100px 30px;
+  animation: floatingGold 18s linear infinite;
+}
+
+@keyframes floatingGold {
+  from {
+    background-position: 0 0, 50px 80px, 100px 30px;
+  }
+  to {
+    background-position: 30px -170px, -40px -150px, 60px -200px;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .couple-card h1,
+  .couple-card h2,
+  body::after {
+    animation: none !important;
+  }
+}
+/* FIX spacing between couple names and countdown */
+.couple-card .second-name {
+    margin-bottom: 0 !important;
+}
+
+.couple-card .countdown-heading {
+    margin-top: 70px !important;
+    padding-top: 0 !important;
+}
+
+.couple-card .countdown-title {
+    margin-top: 0 !important;
+}
+.rsvp-card .mini-label {
+    font-size: 12px !important;
+    letter-spacing: 3px !important;
+    margin-top: 22px !important;
+    margin-bottom: 12px !important;
+    display: inline-block;
+}
+
+
+/* FLOATING ROSE PETALS */
+.rose-petal {
+    position: fixed;
+    top: -40px;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    animation: roseFall linear forwards;
+    opacity: 0;
+}
+
+@keyframes roseFall {
+    0% {
+        transform: translate3d(0, -5vh, 0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    85% {
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translate3d(70px, 110vh, 0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rose-petal {
+        animation: none;
+        display: none;
+    }
+}
+
+/* LUXURY ENVELOPE DECORATION */
+.envelope {
+  filter: drop-shadow(0 12px 24px rgba(120, 82, 35, 0.12));
+  transition: filter 0.8s ease;
+}
+
+.envelope::before {
+  content: "✧";
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  color: #c5a059;
+  font-size: 24px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.envelope::after {
+  content: "✧";
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  color: #c5a059;
+  font-size: 24px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ELEGANT GOLD SEAL */
+.wax-seal {
+  box-shadow:
+    0 0 0 3px rgba(197, 160, 89, 0.18),
+    0 0 18px rgba(197, 160, 89, 0.28),
+    inset 0 2px 4px rgba(255, 255, 255, 0.25);
+  transition: box-shadow 0.7s ease, transform 0.7s ease;
+}
+
+/* MAGICAL GLOW WHEN OPENING */
+.envelope.open,
+.envelope.opening {
+  filter:
+    drop-shadow(0 0 18px rgba(197, 160, 89, 0.4))
+    drop-shadow(0 12px 24px rgba(120, 82, 35, 0.15));
+}
+
+.envelope.open .wax-seal,
+.envelope.opening .wax-seal {
+  box-shadow: 0 0 28px rgba(197, 160, 89, 0.55);
+}
+
+/* SOFT SPARKLES */
+.envelope-sparkle {
+  position: absolute;
+  color: #c5a059;
+  pointer-events: none;
+  animation: sparkleTwinkle 2.5s ease-in-out infinite;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.7) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(45deg);
+  }
+}
+
+/* ===== ROYAL WEDDING ENVELOPE ===== */
+
+/* Ornate frame around the envelope */
+.envelope-wrap {
+  isolation: isolate;
+  filter: drop-shadow(0 22px 28px rgba(91, 61, 31, 0.2));
+}
+
+.envelope-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -11px;
+  border: 1px solid rgba(184, 149, 91, 0.8);
+  outline: 1px solid rgba(184, 149, 91, 0.3);
+  outline-offset: 4px;
+  pointer-events: none;
+  z-index: 8;
+}
+
+/* Warm light behind the envelope */
+.envelope-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 225, 166, 0.38),
+    rgba(197, 160, 89, 0.1) 48%,
+    transparent 72%
+  );
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.8;
+  animation: royalAura 4s ease-in-out infinite;
+}
+
+@keyframes royalAura {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* More realistic embossed envelope paper */
+.envelope-back {
+  background:
+    linear-gradient(115deg, transparent 20%, rgba(255,255,255,.48) 45%, transparent 65%),
+    radial-gradient(ellipse at 50% 15%, #fffaf0, #ead5b5 65%, #c9a46e);
+  box-shadow:
+    inset 0 0 0 4px #fff7e7,
+    inset 0 0 0 5px #c5a36b,
+    inset 0 0 0 10px #fff8e9,
+    inset 0 0 0 11px #c5a36b,
+    0 18px 35px rgba(91, 61, 31, 0.18);
+}
+
+/* Fine gold detail on envelope folds */
+.envelope-front-left,
+.envelope-front-right,
+.envelope-front-bottom {
+  backface-visibility: hidden;
+}
+
+.envelope-front-left {
+  filter: drop-shadow(1px 0 1px rgba(126, 87, 42, .3));
+}
+
+.envelope-front-right {
+  filter: drop-shadow(-1px 0 1px rgba(126, 87, 42, .3));
+}
+
+.envelope-front-bottom {
+  filter: drop-shadow(0 -2px 2px rgba(126, 87, 42, .15));
+}
+
+/* Premium wax seal */
+.wax-seal {
+  border: 1px solid #8d622d;
+  box-shadow:
+    0 7px 16px rgba(91, 54, 20, .35),
+    0 0 0 3px #f4e3bd,
+    0 0 0 4px #bd9656,
+    inset 0 0 0 2px #f6dfa4,
+    inset 0 0 0 5px #a87b3e,
+    inset 0 0 0 6px #eed49b;
+}
+
+/* Floating gold dust around the envelope */
+.royal-particle {
+  position: absolute;
+  z-index: 9;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e6c77e;
+  box-shadow: 0 0 9px 2px rgba(230, 199, 126, .6);
+  pointer-events: none;
+  animation: royalParticle 3s ease-in-out infinite;
+}
+
+@keyframes royalParticle {
+  0%, 100% {
+    opacity: .15;
+    transform: translateY(5px) scale(.6);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.3);
+  }
+}
+
+/* Opening: glow and dramatic lift */
+.envelope-screen.opening .envelope-wrap {
+  animation: envelopeRevealGlow 1.3s ease both;
+}
+
+.envelope-screen.opening .envelope-flap {
+  transform: rotateX(180deg);
+  z-index: 0;
+}
+
+.envelope-screen.opening .letter {
+  animation: luxuryLetterRise 1.25s cubic-bezier(.2,.75,.2,1) forwards;
+  z-index: 5;
+}
+
+.envelope-screen.opening .wax-seal {
+  animation: sealFade .32s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes envelopeRevealGlow {
+  0% {
+    filter: drop-shadow(0 22px 28px rgba(91,61,31,.2));
+  }
+  45% {
+    filter:
+      drop-shadow(0 0 28px rgba(255,220,145,.95))
+      drop-shadow(0 20px 35px rgba(91,61,31,.2));
+  }
+  100% {
+    filter: drop-shadow(0 22px 28px rgba(91,61,31,.2));
+  }
+}
+
+@media (max-width: 480px) {
+  .envelope-wrap::before {
+    inset: -6px;
+    outline-offset: 2px;
+  }
+
+  .envelope-wrap::after {
+    inset: -17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-wrap::after,
+  .royal-particle {
+    animation: none !important;
+  }
+}
+
+/* ===== ORNATE ROYAL WEDDING FRAME ===== */
+
+.envelope-screen {
+  isolation: isolate;
+}
+
+/* Four elegant gold corners */
+.envelope-screen::before {
+  content: "";
+  position: fixed;
+  inset: 15px;
+  z-index: 50;
+  pointer-events: none;
+  border: 1px solid rgba(193, 157, 94, 0.48);
+  outline: 1px solid rgba(193, 157, 94, 0.18);
+  outline-offset: 5px;
+
+  background:
+    /* Top-left */
+    radial-gradient(
+      circle at 0 0,
+      transparent 0 24px,
+      rgba(193, 157, 94, 0.9) 25px 26px,
+      transparent 27px
+    ) top left / 70px 70px no-repeat,
+
+    /* Top-right */
+    radial-gradient(
+      circle at 100% 0,
+      transparent 0 24px,
+      rgba(193, 157, 94, 0.9) 25px 26px,
+      transparent 27px
+    ) top right / 70px 70px no-repeat,
+
+    /* Bottom-left */
+    radial-gradient(
+      circle at 0 100%,
+      transparent 0 24px,
+      rgba(193, 157, 94, 0.9) 25px 26px,
+      transparent 27px
+    ) bottom left / 70px 70px no-repeat,
+
+    /* Bottom-right */
+    radial-gradient(
+      circle at 100% 100%,
+      transparent 0 24px,
+      rgba(193, 157, 94, 0.9) 25px 26px,
+      transparent 27px
+    ) bottom right / 70px 70px no-repeat;
+}
+
+@media (max-width: 480px) {
+  .envelope-screen::before {
+    inset: 9px;
+    outline-offset: 3px;
+    background-size: 48px 48px;
+  }
+}
+
+/* ===== AMBIENT GOLDEN ATMOSPHERE ===== */
+
+.envelope-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.envelope-screen::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 18% 25%,
+      rgba(255, 222, 157, 0.24),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 82% 70%,
+      rgba(213, 176, 111, 0.2),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 248, 224, 0.3),
+      transparent 42%
+    );
+
+  animation: ambientGoldenGlow 12s ease-in-out infinite alternate;
+}
+
+@keyframes ambientGoldenGlow {
+  0% {
+    transform: translate3d(-1%, -1%, 0) scale(1);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: translate3d(1%, 1%, 0) scale(1.06);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(-0.5%, 1%, 0) scale(1.02);
+    opacity: 0.7;
+  }
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .envelope-screen::after {
+    animation: none;
+  }
+}
+
+/* =========================================
+   FINAL FIX — ROYAL FRAME + AMBIENT LIGHT
+   Akmal & Azreen Wedding Invitation
+========================================= */
+
+/* A. MAKE THE ROYAL FRAME VISIBLE */
+.envelope-screen::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  z-index: 20;
+  pointer-events: none;
+
+  border: 1px solid rgba(184, 149, 91, 0.65);
+  outline: 1px solid rgba(184, 149, 91, 0.25);
+  outline-offset: 5px;
+  border-radius: 2px;
+
+  /* Ornate double-line corners */
+  background:
+    linear-gradient(#b8955b, #b8955b)
+      left top / 64px 2px no-repeat,
+    linear-gradient(#b8955b, #b8955b)
+      left top / 2px 64px no-repeat,
+
+    linear-gradient(#b8955b, #b8955b)
+      right top / 64px 2px no-repeat,
+    linear-gradient(#b8955b, #b8955b)
+      right top / 2px 64px no-repeat,
+
+    linear-gradient(#b8955b, #b8955b)
+      left bottom / 64px 2px no-repeat,
+    linear-gradient(#b8955b, #b8955b)
+      left bottom / 2px 64px no-repeat,
+
+    linear-gradient(#b8955b, #b8955b)
+      right bottom / 64px 2px no-repeat,
+    linear-gradient(#b8955b, #b8955b)
+      right bottom / 2px 64px no-repeat,
+
+    /* Small ornamental diamonds at each corner */
+    radial-gradient(
+      diamond,
+      #b8955b 0 3px,
+      transparent 4px
+    ) left 20px top 20px / 14px 14px no-repeat,
+
+    radial-gradient(
+      diamond,
+      #b8955b 0 3px,
+      transparent 4px
+    ) right 20px top 20px / 14px 14px no-repeat,
+
+    radial-gradient(
+      diamond,
+      #b8955b 0 3px,
+      transparent 4px
+    ) left 20px bottom 20px / 14px 14px no-repeat,
+
+    radial-gradient(
+      diamond,
+      #b8955b 0 3px,
+      transparent 4px
+    ) right 20px bottom 20px / 14px 14px no-repeat;
+}
+
+/* B. RESTORE THE ORIGINAL TWINKLING STAR */
+.envelope-screen::after {
+  content: "✧";
+  position: absolute;
+  top: 8%;
+  right: 10%;
+  z-index: 2;
+  color: var(--gold);
+  font-size: 34px;
+  text-shadow: 0 0 16px rgba(184, 149, 91, 0.65);
+  pointer-events: none;
+  animation: twinkle 2.8s ease-in-out infinite;
+}
+
+/* C. AMBIENT GOLDEN LIGHT — WITHOUT MOVING THE CONTENT */
+.envelope-screen {
+  background-color: var(--cream);
+
+  background-image:
+    radial-gradient(
+      ellipse at 18% 22%,
+      rgba(255, 221, 157, 0.62),
+      transparent 36%
+    ),
+    radial-gradient(
+      ellipse at 83% 72%,
+      rgba(207, 172, 111, 0.36),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 52% 45%,
+      rgba(255, 253, 242, 0.9),
+      transparent 48%
+    ),
+    linear-gradient(
+      135deg,
+      #f8f0e5,
+      #f4e7d4,
+      #fffaf1,
+      #f0e0c9
+    );
+
+  background-size:
+    160% 160%,
+    170% 170%,
+    150% 150%,
+    250% 250%;
+
+  animation: royalAmbientBackground 14s ease-in-out infinite alternate;
+}
+
+@keyframes royalAmbientBackground {
+  0% {
+    background-position:
+      0% 0%,
+      100% 100%,
+      50% 50%,
+      0% 50%;
+  }
+
+  50% {
+    background-position:
+      65% 30%,
+      20% 70%,
+      40% 20%,
+      100% 50%;
+  }
+
+  100% {
+    background-position:
+      100% 80%,
+      0% 10%,
+      70% 90%,
+      0% 50%;
+  }
+}
+
+/* D. MOBILE FRAME */
+@media (max-width: 480px) {
+  .envelope-screen::before {
+    inset: 12px;
+    outline-offset: 3px;
+    background-size:
+      42px 2px, 2px 42px,
+      42px 2px, 2px 42px,
+      42px 2px, 2px 42px,
+      42px 2px, 2px 42px,
+      10px 10px, 10px 10px,
+      10px 10px, 10px 10px;
+  }
+}
+
+/* E. ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+  .envelope-screen {
+    animation: none;
+  }
+}
+
+/* ROYAL GOLD FRAME — FINAL FINISHING */
+
+.envelope-screen::before {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  z-index: 20;
+  pointer-events: none;
+
+  border: 1px solid rgba(184, 145, 76, 0.8);
+  outline: 1px solid rgba(184, 145, 76, 0.3);
+  outline-offset: 5px;
+
+  background:
+    /* Top-left ornament */
+    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      left top / 28px 28px no-repeat,
+    linear-gradient(45deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      left top / 28px 28px no-repeat,
+
+    /* Top-right ornament */
+    linear-gradient(225deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      right top / 28px 28px no-repeat,
+    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      right top / 28px 28px no-repeat,
+
+    /* Bottom-left ornament */
+    linear-gradient(45deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      left bottom / 28px 28px no-repeat,
+    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      left bottom / 28px 28px no-repeat,
+
+    /* Bottom-right ornament */
+    linear-gradient(225deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      right bottom / 28px 28px no-repeat,
+    linear-gradient(315deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
+      right bottom / 28px 28px no-repeat;
+}
+
+@media (max-width: 600px) {
+  .envelope-screen::before {
+    inset: 14px;
+    outline-offset: 3px;
+  }
+}
