@@ -127,7 +127,6 @@ updateCountdown();
 window.setInterval(updateCountdown, 1000);
 
 /* Back-to-top button */
-const backToTop = document.getElementById("backToTop");
 
 if (backToTop) {
   window.addEventListener("scroll", () => {
