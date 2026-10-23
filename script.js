@@ -67,12 +67,15 @@ function openEnvelope() {
 openInvitation.addEventListener("click", openEnvelope);
 openHint.addEventListener("click", openEnvelope);
 
-scrollCue.addEventListener("click", () => {
-  invitationContent.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+
+if (scrollCue) {
+  scrollCue.addEventListener("click", () => {
+    invitationContent.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
   });
-});
+}
 
 
 /* Countdown to the wedding */
@@ -127,6 +130,7 @@ updateCountdown();
 window.setInterval(updateCountdown, 1000);
 
 /* Back-to-top button */
+
 
 if (backToTop) {
   window.addEventListener("scroll", () => {
