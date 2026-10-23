@@ -74,57 +74,74 @@ scrollCue.addEventListener("click", () => {
   });
 });
 
+
 /* Countdown to the wedding */
 const weddingDate = new Date("2026-12-20T12:00:00+08:00").getTime();
 
 const pad = (number) => String(number).padStart(2, "0");
 
 function updateCountdown() {
-  let difference = weddingDate - Date.now();
+  const daysElement = document.getElementById("days");
+  const hoursElement = document.getElementById("hours");
+  const minutesElement = document.getElementById("minutes");
+  const secondsElement = document.getElementById("seconds");
+
+  if (!daysElement || !hoursElement || !minutesElement || !secondsElement) {
+    return;
+  }
+
+  const difference = weddingDate - Date.now();
 
   if (difference <= 0) {
-    ["days", "hours", "minutes", "seconds"].forEach((id) => {
-      document.getElementById(id).textContent = "00";
-    });
+    daysElement.textContent = "00";
+    hoursElement.textContent = "00";
+    minutesElement.textContent = "00";
+    secondsElement.textContent = "00";
 
-    document.querySelector(".countdown-heading h2").innerHTML =
-      'Hari bahagia mereka <span>♡</span>';
+    const heading = document.querySelector(".countdown-heading h2");
+    const note = document.querySelector(".countdown-note");
 
-    document.querySelector(".countdown-note").textContent =
-      "Selamat pengantin baru, Akmal & Azreen!";
+    if (heading) {
+      heading.innerHTML = 'Hari bahagia mereka <span>♡</span>';
+    }
+
+    if (note) {
+      note.textContent = "Selamat pengantin baru, Akmal & Azreen!";
+    }
 
     return;
   }
 
   const days = Math.floor(difference / 86400000);
-  difference %= 86400000;
-
-  const hours = Math.floor(difference / 3600000);
-  difference %= 3600000;
-
-  const minutes = Math.floor(difference / 60000);
+  const hours = Math.floor((difference % 86400000) / 3600000);
+  const minutes = Math.floor((difference % 3600000) / 60000);
   const seconds = Math.floor((difference % 60000) / 1000);
 
-  document.getElementById("days").textContent = pad(days);
-  document.getElementById("hours").textContent = pad(hours);
-  document.getElementById("minutes").textContent = pad(minutes);
-  document.getElementById("seconds").textContent = pad(seconds);
+  daysElement.textContent = pad(days);
+  hoursElement.textContent = pad(hours);
+  minutesElement.textContent = pad(minutes);
+  secondsElement.textContent = pad(seconds);
 }
 
 updateCountdown();
 window.setInterval(updateCountdown, 1000);
 
 /* Back-to-top button */
-window.addEventListener("scroll", () => {
-  backToTop.classList.toggle("visible", window.scrollY > 500);
-});
+const backToTop = document.getElementById("backToTop");
 
-backToTop.addEventListener("click", () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
+if (backToTop) {
+  window.addEventListener("scroll", () => {
+    backToTop.classList.toggle("visible", window.scrollY > 500);
   });
-});
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
+
 
 /* FLOATING ROSE PETALS */
 function createRosePetal() {
