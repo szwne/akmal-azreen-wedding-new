@@ -1,9 +1,5 @@
 "use strict";
-
-/* ==========================================
-   AKMAL & AZREEN — WEDDING INVITATION
-========================================== */
-
+//AKMAL & AZREEN — WEDDING INVITATION
 /* GOOGLE SHEETS GUEST WISHES — JSONP API */
 const WISHES_API =
 "https://script.google.com/macros/s/AKfycbzY3fQInBdLlajCxOSdQNcgzz-g8xYSvtX5auTaoDCBh5bO-iRVB1d4A64KaV_E2VwY-w/exec";
@@ -26,13 +22,11 @@ let invitationOpened = false;
 let wishesRefreshTimer = null;
 let wishesRequestTimer = null;
 let latestWishes = [];
+let lastWishesSignature = "";
 let isLoadingWishes = false;
 let wishesRequestId = 0;
 
-/* ==========================================
-   GOLD PARTICLES AROUND THE ENVELOPE
-========================================== */
-
+//GOLD PARTICLES AROUND THE ENVELOPE
 const envelopeWrap = document.querySelector(".envelope-wrap");
 
 if (envelopeWrap) {
@@ -47,9 +41,7 @@ if (envelopeWrap) {
   }
 }
 
-/* ==========================================
-   OPEN THE WEDDING ENVELOPE
-========================================== */
+//OPEN THE WEDDING ENVELOPE
 
 function openEnvelope() {
   if (invitationOpened) return;
@@ -122,9 +114,7 @@ if (scrollCue) {
   });
 }
 
-/* ==========================================
-   WEDDING COUNTDOWN
-========================================== */
+//WEDDING COUNTDOWN
 
 const weddingDate = new Date("2026-12-20T12:00:00+08:00").getTime();
 
@@ -166,9 +156,7 @@ function updateCountdown() {
 updateCountdown();
 window.setInterval(updateCountdown, 1000);
 
-/* ==========================================
-   LIVE GUEST WISHES — JSONP
-========================================== */
+//LIVE GUEST WISHES — JSONP
 
 function setWishesStatus(message) {
   const status = document.getElementById("wishesStatus");
@@ -187,6 +175,7 @@ function formatGuestMessage(message) {
   return String(message ?? "").trim();
 }
 
+
 function renderWishes(wishes) {
   const list = document.getElementById("wishesList");
   const count = document.getElementById("wishesCount");
@@ -196,19 +185,73 @@ function renderWishes(wishes) {
   if (!list) return;
 
   const validWishes = (Array.isArray(wishes) ? wishes : [])
+    .map((wish) => {
+      const rawName = String(wish?.name ?? "").trim();
+      const rawMessage = String(wish?.message ?? "").trim();
+
+      return {
+        name: rawName,
+        message: rawMessage
+      };
+    })
+    .filter((wish) => {
+      const name = wish.name.toLowerCase().replace(/\s+/g, " ");
+      const message = wish.message.toLowerCase().replace(/\s+/g, " ");
+
+      // Ignore completely empty rows.
+      if (!wish.name && !wish.message) return false;
+      if (!wish.message) return false;
+
+      // Ignore spreadsheet header rows.
+      const headerNames = [
+        "nama tetamu",
+        "name",
+        "guest name",
+        "nama"
+      ];
+
+      const headerMessages = [
+        "pesanan",
+        "ucapan",
+        "pesanan & ucapan kepada pengantin",
+        "pesanan dan ucapan kepada pengantin",
+        "ucapan kepada pengantin",
+        "pesanan kepada pengantin",
+        "message",
+        "wish",
+        "wishes",
+        "message to the bride and groom"
+      ];
+
+      if (headerNames.includes(name)) return false;
+      if (headerMessages.includes(message)) return false;
+
+      // Ignore rows where both cells contain spreadsheet headings.
+      if (
+        (name.includes("nama tetamu") || name === "name") &&
+        (
+          message.includes("pesanan") ||
+          message.includes("ucapan kepada pengantin")
+        )
+      ) {
+        return false;
+      }
+
+      return true;
+    })
     .map((wish) => ({
       name: formatGuestName(wish.name),
       message: formatGuestMessage(wish.message)
-    }))
-    .filter((wish) => wish.message.length > 0);
+    }));
 
+  // Update the count even if the displayed cards have not changed.
   if (count) {
     count.textContent = String(validWishes.length);
   }
 
-  list.replaceChildren();
-
   if (validWishes.length === 0) {
+    list.replaceChildren();
+
     setWishesStatus(
       "No wishes yet. Be the first to share your heartfelt wishes."
     );
@@ -218,10 +261,24 @@ function renderWishes(wishes) {
         "This section will update when new wishes are received.";
     }
 
+    lastWishesSignature = JSON.stringify(validWishes);
     return;
   }
 
   if (status) status.hidden = true;
+
+  const signature = JSON.stringify(validWishes);
+
+  // Do not rebuild the cards when the wishes have not changed.
+  // This helps prevent unnecessary interruptions while scrolling.
+  if (signature === lastWishesSignature) {
+
+    return;
+  }
+
+  lastWishesSignature = signature;
+
+  const fragment = document.createDocumentFragment();
 
   validWishes.forEach((wish) => {
     const card = document.createElement("article");
@@ -245,8 +302,10 @@ function renderWishes(wishes) {
     message.textContent = wish.message;
 
     card.append(ornament, name, divider, message);
-    list.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  list.replaceChildren(fragment);
 
   if (updateMessage) {
     updateMessage.textContent =
@@ -372,10 +431,7 @@ function startWishesAutoRefresh() {
   }, WISHES_REFRESH_INTERVAL);
 }
 
-/* ==========================================
-   BACK-TO-TOP BUTTON
-========================================== */
-
+//BACK-TO-TOP BUTTON
 function updateBackToTop() {
   if (!backToTop) return;
 
@@ -392,9 +448,8 @@ if (backToTop) {
   });
 }
 
-/* ==========================================
-   FLOATING ROSE PETALS
-========================================== */
+
+//FLOATING ROSE PETALS
 
 const reducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"

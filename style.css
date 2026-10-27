@@ -167,10 +167,7 @@ footer small { font-size:9px; letter-spacing:.2em; }
   .wax-seal { width:52px; height:52px; }
 }
 
-/* ==========================================
-   AKMAL & AZREEN — ROYAL LUXURY UPGRADE
-   Champagne gold • embossed paper • heirloom
-========================================== */
+AKMAL & AZREEN — ROYAL LUXURY UPGRADE
 
 :root {
   --gold: #b8955b;
@@ -1802,4 +1799,18 @@ body::after {
   .wish-card {
     animation: none;
   }
+}
+
+/* GUEST WISHES — SMOOTHER SCROLLING */
+.wishes-list {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
+  touch-action: pan-y;
+}
+
+/* Avoid replaying card animations during scrolling */
+.wish-card {
+  animation: none;
 }
