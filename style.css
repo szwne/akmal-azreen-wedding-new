@@ -1602,48 +1602,204 @@ body::after {
   }
 }
 
-/* ROYAL GOLD FRAME — FINAL FINISHING */
+/* ==========================================
+   GUEST WISHES — ROYAL CHAMPAGNE GOLD
+========================================== */
 
-.envelope-screen::before {
-  content: "";
-  position: absolute;
-  inset: 22px;
-  z-index: 20;
-  pointer-events: none;
-
-  border: 1px solid rgba(184, 145, 76, 0.8);
-  outline: 1px solid rgba(184, 145, 76, 0.3);
-  outline-offset: 5px;
-
+.wishes-section {
+  position: relative;
+  z-index: 1;
+  width: min(760px, calc(100% - 36px));
+  margin: 20px auto 50px;
+  padding: 48px 24px 38px;
+  text-align: center;
+  color: var(--ink);
   background:
-    /* Top-left ornament */
-    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      left top / 28px 28px no-repeat,
-    linear-gradient(45deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      left top / 28px 28px no-repeat,
-
-    /* Top-right ornament */
-    linear-gradient(225deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      right top / 28px 28px no-repeat,
-    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      right top / 28px 28px no-repeat,
-
-    /* Bottom-left ornament */
-    linear-gradient(45deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      left bottom / 28px 28px no-repeat,
-    linear-gradient(135deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      left bottom / 28px 28px no-repeat,
-
-    /* Bottom-right ornament */
-    linear-gradient(225deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      right bottom / 28px 28px no-repeat,
-    linear-gradient(315deg, transparent 44%, #b8955b 45% 47%, transparent 48%)
-      right bottom / 28px 28px no-repeat;
+    radial-gradient(ellipse at top, #fffefb 0%, transparent 72%),
+    linear-gradient(145deg, #fffaf2, #f4e6d3);
+  border: 1px solid #c8aa76;
+  outline: 1px solid rgba(184, 149, 91, 0.35);
+  outline-offset: 5px;
+  box-shadow: 0 18px 45px rgba(91, 66, 42, 0.08);
 }
 
-@media (max-width: 600px) {
-  .envelope-screen::before {
-    inset: 14px;
-    outline-offset: 3px;
+.wishes-ornament {
+  margin-bottom: 18px;
+  color: var(--gold);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+}
+
+.wishes-section .mini-label {
+  margin: 0 0 12px;
+}
+
+.wishes-title {
+  margin: 0;
+  color: #76563a;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(42px, 8vw, 58px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.wishes-intro {
+  max-width: 470px;
+  margin: 12px auto 24px;
+  color: #887669;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+.wishes-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0 auto 22px;
+  padding: 9px 18px;
+  color: #8d6b3e;
+  background: #fff8ec;
+  border: 1px solid #d8c19a;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+#wishesCount {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.wishes-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  max-height: 470px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px 8px 12px 5px;
+  text-align: center;
+  scrollbar-width: thin;
+  scrollbar-color: #c6a66e #f5ead9;
+}
+
+.wishes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wishes-list::-webkit-scrollbar-track {
+  background: #f5ead9;
+}
+
+.wishes-list::-webkit-scrollbar-thumb {
+  background: #c6a66e;
+  border-radius: 10px;
+}
+
+.wish-card {
+  min-width: 0;
+  padding: 22px 16px 20px;
+  background: rgba(255, 253, 248, 0.88);
+  border: 1px solid #e0cba8;
+  box-shadow: 0 5px 16px rgba(91, 66, 42, 0.05);
+  overflow-wrap: anywhere;
+  animation: wishFadeIn 0.45s ease both;
+}
+
+.wish-card-ornament {
+  margin-bottom: 8px;
+  color: #b8955b;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+}
+
+.wish-guest-name {
+  margin: 0;
+  color: #76563a;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.wish-card-divider {
+  width: 42px;
+  height: 1px;
+  margin: 12px auto;
+  background: #c8aa76;
+}
+
+.wish-message {
+  margin: 0;
+  color: #79685b;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 18px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.wishes-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 30px 12px;
+  color: #8c7b70;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.wishes-update {
+  margin: 20px 0 0;
+  color: #9a8267;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 15px;
+  font-style: italic;
+}
+
+@keyframes wishFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 540px) {
+  .wishes-section {
+    width: calc(100% - 32px);
+    padding: 38px 15px 28px;
+  }
+
+  .wishes-list {
+    grid-template-columns: 1fr;
+    max-height: 430px;
+    gap: 12px;
+    padding-right: 5px;
+  }
+
+  .wishes-title {
+    font-size: 46px;
+  }
+
+  .wishes-intro {
+    font-size: 18px;
+  }
+
+  .wish-card {
+    padding: 20px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wish-card {
+    animation: none;
   }
 }
