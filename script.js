@@ -307,10 +307,6 @@ function renderWishes(wishes) {
 
   list.replaceChildren(fragment);
 
-  if (updateMessage) {
-    updateMessage.textContent =
-      "Checking for new wishes automatically.";
-  }
 }
 
 function loadWishes() {
