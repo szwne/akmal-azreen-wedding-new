@@ -197,6 +197,7 @@ function renderWishes(wishes) {
     .filter((wish) => {
       const name = wish.name.toLowerCase().replace(/\s+/g, " ");
       const message = wish.message.toLowerCase().replace(/\s+/g, " ");
+if (name === "mohd khusairi") return false;
 
       // Ignore completely empty rows.
       if (!wish.name && !wish.message) return false;
