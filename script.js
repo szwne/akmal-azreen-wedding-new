@@ -142,7 +142,7 @@ function updateCountdown() {
     const note = document.querySelector(".countdown-note");
 
     if (heading) heading.textContent = "Their special day has arrived";
-    if (note) note.textContent = "Best wishes to Akmal & Azreen!";
+    if (note) note.textContent = "Best wishes to Azreen & Akmal!";
 
     return;
   }
