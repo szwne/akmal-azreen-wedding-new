@@ -1814,3 +1814,26 @@ body::after {
 .wish-card {
   animation: none;
 }
+
+/* ENVELOPE NAMES — CENTERED ON THREE LINES */
+.letter-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.letter-names > span {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.letter-names > i {
+  display: block;
+  margin: 2px 0;
+  font-style: normal;
+  text-align: center;
+}
